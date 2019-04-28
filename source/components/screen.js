@@ -3,12 +3,16 @@ import { SafeAreaView, View } from "react-native"
 import { animated } from "react-spring/renderprops-native"
 
 const AnimatedView = animated(View)
+const AnimatedSafeAreaView = animated(SafeAreaView)
 
 const Screen = ({ style, children }) => {
+    const { opacity, transform, ...styles } = style
+
     return (
         <AnimatedView
             style={{
-                ...style,
+                opacity,
+                ...styles,
                 position: "absolute",
                 top: 0,
                 right: 0,
@@ -16,7 +20,13 @@ const Screen = ({ style, children }) => {
                 left: 0,
             }}
         >
-            <SafeAreaView>{children}</SafeAreaView>
+            <AnimatedSafeAreaView
+                style={{
+                    transform,
+                }}
+            >
+                {children}
+            </AnimatedSafeAreaView>
         </AnimatedView>
     )
 }
