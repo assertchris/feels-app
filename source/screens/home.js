@@ -1,11 +1,16 @@
 import React from "react"
-import { Text, View } from "react-native"
+import { Text } from "react-native"
+import { Link } from "react-router-native"
+import { Screen } from "../components"
 
-const Home = () => {
+const Home = ({ style }) => {
     return (
-        <View>
-            <Text>home</Text>
-        </View>
+        <Screen style={{ ...style, backgroundColor: "#0fc" }}>
+            <Link to="/log">
+                <Text>Log today</Text>
+            </Link>
+            <Text>Home</Text>
+        </Screen>
     )
 }
 
