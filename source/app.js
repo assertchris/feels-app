@@ -1,8 +1,9 @@
-import React from "react"
-import { Text, View } from "react-native"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { NativeRouter, Route, Switch } from "react-router-native"
+import { connect } from "react-redux"
 import { Transition } from "react-spring/renderprops-native"
-import { Provider, store } from "./data"
+import { fetchEntries } from "./data"
 import { Log, Home } from "./screens"
 
 const styles = style => ({
@@ -10,9 +11,18 @@ const styles = style => ({
     transform: [{ translateX: style.translateX }],
 })
 
-const App = () => {
-    return (
-        <Provider store={store}>
+class App extends Component {
+    static propTypes = {
+        fetchEntries: PropTypes.func.isRequired,
+    }
+
+    componentDidMount() {
+        const { fetchEntries } = this.props
+        fetchEntries()
+    }
+
+    render() {
+        return (
             <NativeRouter>
                 <Route
                     render={({ location }) => (
@@ -38,8 +48,15 @@ const App = () => {
                     )}
                 />
             </NativeRouter>
-        </Provider>
-    )
+        )
+    }
 }
 
-export { App }
+const ConnectedApp = connect(
+    undefined,
+    dispatch => ({
+        fetchEntries: () => dispatch(fetchEntries()),
+    }),
+)(App)
+
+export { ConnectedApp as App }

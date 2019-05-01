@@ -1,0 +1,27 @@
+platform :ios, "9.0"
+
+target "Feels" do
+    path = "../node_modules/react-native"
+
+    pod "yoga", path: "#{path}/ReactCommon/yoga"
+
+    pod "React", path: path, subspecs: [
+        "Core",
+        "CxxBridge",
+        "DevSupport",
+        "RCTActionSheet",
+        "RCTAnimation",
+        "RCTGeolocation",
+        "RCTImage",
+        "RCTLinkingIOS",
+        "RCTNetwork",
+        "RCTSettings",
+        "RCTText",
+        "RCTVibration",
+        "RCTWebSocket",
+    ]
+
+    pod "Folly", :podspec => "#{path}/third-party-podspecs/Folly.podspec"
+
+    pod "RNICloudStore", :path => "../node_modules/react-native-icloudstore"
+end
