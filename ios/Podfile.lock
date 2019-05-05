@@ -63,6 +63,8 @@ PODS:
     - React/RCTBlob
   - RNICloudStore (0.1.0):
     - React
+  - RNSVG (9.4.0):
+    - React
   - yoga (0.59.5.React)
 
 DEPENDENCIES:
@@ -81,6 +83,7 @@ DEPENDENCIES:
   - React/RCTVibration (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - RNICloudStore (from `../node_modules/react-native-icloudstore`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -96,6 +99,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native"
   RNICloudStore:
     :path: "../node_modules/react-native-icloudstore"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -106,8 +111,9 @@ SPEC CHECKSUMS:
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
   React: 90adac468c7b72bf1fa6c64bf230650f851a8388
   RNICloudStore: bc6e225811637c09bd1eb055d6cd7448e61cd451
+  RNSVG: 9cb6e958c4b6a1f58185ac72a350b148947d6fed
   yoga: 2e571f113e8cbeb0eb752aeebc86c1bfe7a8200c
 
-PODFILE CHECKSUM: 4c709a2311b6eaa18e3ae835c197b5249449dda0
+PODFILE CHECKSUM: fe58df92c9695dd3337bcbcd49b27f9902a723c2
 
 COCOAPODS: 1.6.1

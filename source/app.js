@@ -40,8 +40,15 @@ class App extends Component {
                         >
                             {location => style => (
                                 <Switch location={location}>
-                                    <Route exact path="/" render={() => <Home style={styles(style)} />} />
-                                    <Route exact path="/log" render={() => <Log style={styles(style)} />} />
+                                    <Route
+                                        exact
+                                        path="/"
+                                        render={({ match }) => <Home style={styles(style)} match={match} />}
+                                    />
+                                    <Route
+                                        path="/log/:date"
+                                        render={({ match }) => <Log style={styles(style)} match={match} />}
+                                    />
                                 </Switch>
                             )}
                         </Transition>

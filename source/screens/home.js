@@ -1,24 +1,53 @@
-import React from "react"
-import { Text, TouchableWithoutFeedback, View } from "react-native"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
+import { connect } from "react-redux"
 import { Link } from "react-router-native"
-import { Screen } from "../components"
+import { HomeEntry, LogButton, Screen } from "../components"
 
-const Home = ({ style }) => {
-    return (
-        <Screen style={{ ...style, backgroundColor: "#0cf" }}>
-            <Link
-                to="/log"
-                component={({ children, onPress }) => (
-                    <TouchableWithoutFeedback onPress={onPress}>
-                        <View style={{ padding: 10 }}>{children}</View>
-                    </TouchableWithoutFeedback>
-                )}
-            >
-                <Text>Go to log screen</Text>
-            </Link>
-            <Text>You're on the home screen</Text>
-        </Screen>
-    )
+class Home extends Component {
+    static propTypes = {
+        style: PropTypes.object,
+        entries: PropTypes.array.isRequired,
+        formattedDate: PropTypes.string.isRequired,
+    }
+
+    static defaultProps = {
+        style: {},
+    }
+
+    render() {
+        const { style, entries, formattedDate } = this.props
+
+        const objects = Object.values(entries)
+
+        objects.sort((a, b) => {
+            if (a.date < b.date) {
+                return 1
+            }
+            if (a.date > b.date) {
+                return -1
+            }
+
+            return 0
+        })
+
+        return (
+            <Screen style={{ ...style, backgroundColor: "#0cf" }}>
+                <Link to={`/log/${formattedDate}`} component={LogButton} />
+                {objects.map(entry => (
+                    <HomeEntry key={entry.date} {...entry} />
+                ))}
+            </Screen>
+        )
+    }
 }
 
-export { Home }
+const ConnectedHome = connect(
+    state => ({
+        entries: state.entries,
+        formattedDate: state.formattedDate,
+    }),
+    undefined,
+)(Home)
+
+export { ConnectedHome as Home }

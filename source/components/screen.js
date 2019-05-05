@@ -1,11 +1,12 @@
 import React from "react"
-import { SafeAreaView, View } from "react-native"
+import PropTypes from "prop-types"
+import { SafeAreaView, Text, View } from "react-native"
 import { animated } from "react-spring/renderprops-native"
 
 const AnimatedView = animated(View)
 const AnimatedSafeAreaView = animated(SafeAreaView)
 
-const Screen = ({ style, children }) => {
+const Screen = ({ style, children, forceInset }) => {
     const { opacity, transform, ...styles } = style
 
     return (
@@ -24,11 +25,24 @@ const Screen = ({ style, children }) => {
                 style={{
                     transform,
                 }}
+                forceInset={forceInset}
             >
                 {children}
             </AnimatedSafeAreaView>
         </AnimatedView>
     )
+}
+
+Screen.propTypes = {
+    style: PropTypes.object,
+    children: PropTypes.node,
+    forceInset: PropTypes.object,
+}
+
+Screen.defaultProps = {
+    style: {},
+    children: null,
+    forceInset: undefined,
 }
 
 export { Screen }

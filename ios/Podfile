@@ -22,6 +22,6 @@ target "Feels" do
     ]
 
     pod "Folly", :podspec => "#{path}/third-party-podspecs/Folly.podspec"
-
     pod "RNICloudStore", :path => "../node_modules/react-native-icloudstore"
+    pod "RNSVG", :path => "../node_modules/react-native-svg"
 end
