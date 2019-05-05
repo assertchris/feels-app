@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { SafeAreaView, Text, View } from "react-native"
 import { animated } from "react-spring/renderprops-native"
 import styled, { css } from "styled-components/native"
 

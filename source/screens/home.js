@@ -1,10 +1,10 @@
 import React, { Component } from "react"
-import { View } from "react-native"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Link } from "react-router-native"
 import styled, { css } from "styled-components/native"
 import { HomeEntry, LogButton, Navigation, Screen } from "../components"
+import { ChartLine, Pencil, Tools } from "../icons"
 
 const StyledScrollView = styled.ScrollView.attrs(() => ({
     contentContainerStyle: () => css`
@@ -20,6 +20,7 @@ const StyledScrollView = styled.ScrollView.attrs(() => ({
 const StyledHeading = styled.View`
     padding: 10px 10px 0 10px;
 `
+
 const StyledHeadingText = styled.Text`
     font-size: 30px;
     color: #333;
@@ -58,17 +59,34 @@ class Home extends Component {
         styles.outer.backgroundColor = "#0cf"
 
         return (
-            <Screen styles={styles} forceInset={{ bottom: "never" }}>
+            <Screen styles={styles}>
                 <StyledHeading>
-                    <StyledHeadingText>Your week</StyledHeadingText>
+                    <StyledHeadingText>Overview</StyledHeadingText>
                 </StyledHeading>
-                <Link to={`/log/${formattedDate}`} component={LogButton} />
                 <StyledScrollView>
                     {objects.map(entry => (
                         <HomeEntry key={entry.date} {...entry} />
                     ))}
                 </StyledScrollView>
-                <Navigation />
+                <Navigation
+                    buttons={[
+                        {
+                            to: `/log/${formattedDate}`,
+                            key: "log",
+                            icon: Pencil,
+                        },
+                        {
+                            to: "/graphs",
+                            key: "graphs",
+                            icon: ChartLine,
+                        },
+                        {
+                            to: "/settings",
+                            key: "settings",
+                            icon: Tools,
+                        },
+                    ]}
+                />
             </Screen>
         )
     }

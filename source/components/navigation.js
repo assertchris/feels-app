@@ -1,6 +1,8 @@
 import React from "react"
 import { TouchableWithoutFeedback } from "react-native"
+import PropTypes from "prop-types"
 import styled from "styled-components/native"
+import { Link } from "react-router-native"
 import { ChartLine, Home, Tools } from "../icons"
 
 const StyledNavigationContainer = styled.View`
@@ -18,24 +20,34 @@ const StyledNavigationButton = styled.View`
     justify-content: center;
 `
 
-const Navigation = () => (
+const Navigation = ({ buttons }) => (
     <StyledNavigationContainer>
-        <TouchableWithoutFeedback onPress={() => alert("home")}>
-            <StyledNavigationButton>
-                <Home width={24} height={24} />
-            </StyledNavigationButton>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => alert("graphs")}>
-            <StyledNavigationButton>
-                <ChartLine width={24} height={24} />
-            </StyledNavigationButton>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => alert("settings")}>
-            <StyledNavigationButton>
-                <Tools width={24} height={24} />
-            </StyledNavigationButton>
-        </TouchableWithoutFeedback>
+        {buttons.map(button => {
+            if (button.icon) {
+                const Icon = button.icon
+
+                return (
+                    <Link
+                        key={button.key}
+                        to={button.to}
+                        component={({ onPress }) => (
+                            <TouchableWithoutFeedback onPress={onPress}>
+                                <StyledNavigationButton>
+                                    <Icon width={24} height={24} />
+                                </StyledNavigationButton>
+                            </TouchableWithoutFeedback>
+                        )}
+                    />
+                )
+            }
+
+            return <Link key={button.key} to={button.to} component={button.component} />
+        })}
     </StyledNavigationContainer>
 )
+
+Navigation.propTypes = {
+    buttons: PropTypes.array.isRequired,
+}
 
 export { Navigation }

@@ -4,7 +4,7 @@ import { NativeRouter, Route, Switch } from "react-router-native"
 import { connect } from "react-redux"
 import { Transition } from "react-spring/renderprops-native"
 import { fetchEntries } from "./data"
-import { Log, Home } from "./screens"
+import { Graphs, Log, Home, Settings } from "./screens"
 
 class App extends Component {
     static propTypes = {
@@ -49,6 +49,16 @@ class App extends Component {
                                             exact
                                             path="/"
                                             render={({ match }) => <Home styles={styles} match={match} />}
+                                        />
+                                        <Route
+                                            exact
+                                            path="/graphs"
+                                            render={({ match }) => <Graphs styles={styles} match={match} />}
+                                        />
+                                        <Route
+                                            exact
+                                            path="/settings"
+                                            render={({ match }) => <Settings styles={styles} match={match} />}
                                         />
                                         <Route
                                             path="/log/:date"

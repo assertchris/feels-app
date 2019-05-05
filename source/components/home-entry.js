@@ -1,5 +1,5 @@
 import React from "react"
-import { Text, TouchableWithoutFeedback } from "react-native"
+import { TouchableWithoutFeedback } from "react-native"
 import { Link } from "react-router-native"
 import styled from "styled-components/native"
 import dayjs from "dayjs"
@@ -25,7 +25,7 @@ const StyledDay = styled.Text`
 `
 
 const StyledMonth = styled.Text`
-    font-size: 10px;
+    font-size: 15px;
 `
 
 const StyledRightCell = styled.View`
