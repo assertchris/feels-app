@@ -1,4 +1,5 @@
 export { CloseButton } from "./close-button"
 export { HomeEntry } from "./home-entry"
 export { LogButton } from "./log-button"
+export { Navigation } from "./navigation"
 export { Screen } from "./screen"

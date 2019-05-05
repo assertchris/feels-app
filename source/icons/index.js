@@ -1,2 +1,5 @@
 export { ArrowRight } from "./arrow-right"
+export { ChartLine } from "./chart-line"
+export { Home } from "./home"
 export { Times } from "./times"
+export { Tools } from "./tools"

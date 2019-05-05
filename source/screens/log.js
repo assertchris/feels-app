@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Link } from "react-router-native"
 import styled from "styled-components/native"
-import { CloseButton, Screen } from "../components"
+import { CloseButton, Navigation, Screen } from "../components"
 import { updateEntry } from "../data"
 
 const StyledDateText = styled.Text`
@@ -16,16 +16,23 @@ const StyledTextInput = styled.TextInput`
     padding: 10px;
 `
 
+const StyledQuestions = styled.View`
+    flex-grow: 1;
+`
+
 class Log extends Component {
     static propTypes = {
-        style: PropTypes.object,
+        styles: PropTypes.object,
         entries: PropTypes.array.isRequired,
         match: PropTypes.object.isRequired,
         updateEntry: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
-        style: {},
+        styles: {
+            outer: {},
+            inner: {},
+        },
     }
 
     state = {
@@ -50,14 +57,19 @@ class Log extends Component {
     }
 
     render() {
-        const { style, match } = this.props
+        const { styles, match } = this.props
         const { comments } = this.state
 
+        styles.outer.backgroundColor = "#0fc"
+
         return (
-            <Screen style={{ ...style, backgroundColor: "#0fc" }}>
+            <Screen styles={styles}>
                 <Link to="/" component={CloseButton} />
-                <StyledDateText>{match.params.date}</StyledDateText>
-                <StyledTextInput value={comments} onChangeText={text => this.onChange("comments", text)} />
+                <StyledQuestions>
+                    <StyledDateText>{match.params.date}</StyledDateText>
+                    <StyledTextInput value={comments} onChangeText={text => this.onChange("comments", text)} />
+                </StyledQuestions>
+                <Navigation />
             </Screen>
         )
     }

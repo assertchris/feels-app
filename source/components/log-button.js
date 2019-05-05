@@ -5,7 +5,7 @@ import styled from "styled-components/native"
 import { ArrowRight } from "../icons"
 
 const StyledButton = styled.View`
-    flex-grow: 1;
+    flex-shrink: 1;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;

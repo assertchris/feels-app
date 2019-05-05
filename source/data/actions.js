@@ -16,8 +16,6 @@ export const fetchEntries = () => {
 
         const { ids, entries } = await fetchEntriesFromStorage()
 
-        console.log("fetchEntries entries", entries)
-
         dispatch({
             type: TYPE_FETCH_ENTRIES_SUCCESS,
             payload: { ids, entries },

@@ -6,11 +6,6 @@ import { Transition } from "react-spring/renderprops-native"
 import { fetchEntries } from "./data"
 import { Log, Home } from "./screens"
 
-const styles = style => ({
-    opacity: style.opacity,
-    transform: [{ translateX: style.translateX }],
-})
-
 class App extends Component {
     static propTypes = {
         fetchEntries: PropTypes.func.isRequired,
@@ -38,19 +33,30 @@ class App extends Component {
                             enter={{ opacity: 1.0, translateX: 0 }}
                             leave={{ opacity: 0.0, translateX: -100 }}
                         >
-                            {location => style => (
-                                <Switch location={location}>
-                                    <Route
-                                        exact
-                                        path="/"
-                                        render={({ match }) => <Home style={styles(style)} match={match} />}
-                                    />
-                                    <Route
-                                        path="/log/:date"
-                                        render={({ match }) => <Log style={styles(style)} match={match} />}
-                                    />
-                                </Switch>
-                            )}
+                            {location => style => {
+                                const styles = {
+                                    outer: {
+                                        opacity: style.opacity,
+                                    },
+                                    inner: {
+                                        transform: [{ translateX: style.translateX }],
+                                    },
+                                }
+
+                                return (
+                                    <Switch location={location}>
+                                        <Route
+                                            exact
+                                            path="/"
+                                            render={({ match }) => <Home styles={styles} match={match} />}
+                                        />
+                                        <Route
+                                            path="/log/:date"
+                                            render={({ match }) => <Log styles={styles} match={match} />}
+                                        />
+                                    </Switch>
+                                )
+                            }}
                         </Transition>
                     )}
                 />

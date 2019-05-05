@@ -6,6 +6,8 @@ export const initial = {
     ids: [],
     entries: [],
     formattedDate: dayjs().format("YYYY-MM-DD"),
+    formattedDay: dayjs().format("D"),
+    formattedMonth: dayjs().format("MMM"),
 }
 
 export const reducer = (state = initial, action) => {

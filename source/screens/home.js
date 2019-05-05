@@ -1,22 +1,46 @@
 import React, { Component } from "react"
+import { View } from "react-native"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Link } from "react-router-native"
-import { HomeEntry, LogButton, Screen } from "../components"
+import styled, { css } from "styled-components/native"
+import { HomeEntry, LogButton, Navigation, Screen } from "../components"
+
+const StyledScrollView = styled.ScrollView.attrs(() => ({
+    contentContainerStyle: () => css`
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+    `,
+    showsVerticalScrollIndicator: false,
+}))`
+    flex: 1;
+`
+
+const StyledHeading = styled.View`
+    padding: 10px 10px 0 10px;
+`
+const StyledHeadingText = styled.Text`
+    font-size: 30px;
+    color: #333;
+`
 
 class Home extends Component {
     static propTypes = {
-        style: PropTypes.object,
+        styles: PropTypes.object,
         entries: PropTypes.array.isRequired,
         formattedDate: PropTypes.string.isRequired,
     }
 
     static defaultProps = {
-        style: {},
+        styles: {
+            outer: {},
+            inner: {},
+        },
     }
 
     render() {
-        const { style, entries, formattedDate } = this.props
+        const { styles, entries, formattedDate } = this.props
 
         const objects = Object.values(entries)
 
@@ -31,12 +55,20 @@ class Home extends Component {
             return 0
         })
 
+        styles.outer.backgroundColor = "#0cf"
+
         return (
-            <Screen style={{ ...style, backgroundColor: "#0cf" }}>
+            <Screen styles={styles} forceInset={{ bottom: "never" }}>
+                <StyledHeading>
+                    <StyledHeadingText>Your week</StyledHeadingText>
+                </StyledHeading>
                 <Link to={`/log/${formattedDate}`} component={LogButton} />
-                {objects.map(entry => (
-                    <HomeEntry key={entry.date} {...entry} />
-                ))}
+                <StyledScrollView>
+                    {objects.map(entry => (
+                        <HomeEntry key={entry.date} {...entry} />
+                    ))}
+                </StyledScrollView>
+                <Navigation />
             </Screen>
         )
     }
