@@ -4,7 +4,7 @@ import { Link } from "react-router-native"
 import styled from "styled-components/native"
 import dayjs from "dayjs"
 
-const StyledEntryContainer = styled.View`
+const StyledSummaryContainer = styled.View`
     margin: 10px 10px 0 10px;
     padding: 10px;
     background-color: #fff;
@@ -40,7 +40,7 @@ const StyledComments = styled.Text`
     font-size: 15px;
 `
 
-const HomeEntry = ({ date, comments }) => {
+const Summary = ({ date, comments }) => {
     const dateObject = dayjs(date)
 
     return (
@@ -48,7 +48,7 @@ const HomeEntry = ({ date, comments }) => {
             to={`/log/${date}`}
             component={({ onPress }) => (
                 <TouchableWithoutFeedback onPress={onPress}>
-                    <StyledEntryContainer>
+                    <StyledSummaryContainer>
                         <StyledLeftCell>
                             <StyledDay>{dateObject.format("D")}</StyledDay>
                             <StyledMonth>{dateObject.format("MMM")}</StyledMonth>
@@ -56,11 +56,11 @@ const HomeEntry = ({ date, comments }) => {
                         <StyledRightCell>
                             <StyledComments>{comments}</StyledComments>
                         </StyledRightCell>
-                    </StyledEntryContainer>
+                    </StyledSummaryContainer>
                 </TouchableWithoutFeedback>
             )}
         />
     )
 }
 
-export { HomeEntry }
+export { Summary }

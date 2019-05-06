@@ -1,9 +1,13 @@
 import React from "react"
-import { Picker, Switch } from "react-native"
+import { DatePickerIOS, Picker, Switch } from "react-native"
 import PropTypes from "prop-types"
 import styled from "styled-components/native"
 
-const StyledContainer = styled.View``
+const StyledContainer = styled.View`
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+`
 
 const StyledHeading = styled.View`
     padding: 10px 10px 0 10px;
@@ -21,6 +25,39 @@ const StyledText = styled.TextInput`
 `
 
 const Question = ({ number, heading, inputType, options, value, onChange }) => {
+    let date = undefined
+    let newOnChange = onChange
+
+    if (inputType === "time") {
+        date = new Date()
+
+        if (value) {
+            if (!value.match(/^\d{2}:\d{2}$/)) {
+                alert(value)
+                value = "12:00"
+            }
+
+            const [hours, minutes] = value.split(":")
+
+            date.setHours(hours)
+            date.setMinutes(minutes)
+        }
+
+        newOnChange = value => {
+            const hours = value
+                .getHours()
+                .toString()
+                .padStart(2, "0")
+
+            const minutes = value
+                .getMinutes()
+                .toString()
+                .padStart(2, "0")
+
+            onChange(`${hours}:${minutes}`)
+        }
+    }
+
     return (
         <StyledContainer>
             <StyledHeading>
@@ -28,10 +65,11 @@ const Question = ({ number, heading, inputType, options, value, onChange }) => {
                     {number}. {heading}
                 </StyledHeadingText>
             </StyledHeading>
-            {inputType === "text" && <StyledText value={value} onChangeText={onChange} />}
-            {inputType === "yes/no" && <Switch value={value} onValueChange={onChange} />}
+            {inputType === "time" && <DatePickerIOS date={date} onDateChange={newOnChange} mode="time" />}
+            {inputType === "text" && <StyledText value={value} onChangeText={newOnChange} />}
+            {inputType === "yes/no" && <Switch value={value} onValueChange={newOnChange} />}
             {inputType === "enum" && (
-                <Picker selectedValue={value} onValueChange={onChange}>
+                <Picker selectedValue={value} onValueChange={newOnChange}>
                     {options.map(option => (
                         <Picker.Item key={option} label={option} value={option} />
                     ))}

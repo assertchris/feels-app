@@ -32,8 +32,8 @@ class Settings extends Component {
                 <Navigation
                     buttons={[
                         {
-                            to: "/",
                             key: "home",
+                            to: "/",
                             icon: Check,
                         },
                     ]}

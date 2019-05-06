@@ -42,18 +42,18 @@ class Graphs extends Component {
                 <Navigation
                     buttons={[
                         {
-                            to: `/log/${formattedDate}`,
                             key: "log",
+                            to: `/log/${formattedDate}`,
                             icon: Pencil,
                         },
                         {
-                            to: "/",
                             key: "home",
+                            to: "/",
                             icon: ClipboardList,
                         },
                         {
-                            to: "/settings",
                             key: "settings",
+                            to: "/settings",
                             icon: Tools,
                         },
                     ]}

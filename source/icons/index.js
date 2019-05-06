@@ -1,3 +1,4 @@
+export { ArrowLeft } from "./arrow-left"
 export { ArrowRight } from "./arrow-right"
 export { ChartLine } from "./chart-line"
 export { Check } from "./check"

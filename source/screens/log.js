@@ -1,14 +1,15 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import styled from "styled-components/native"
+import styled, { css } from "styled-components/native"
 import dayjs from "dayjs"
+import { animated, Transition } from "react-spring/renderprops-native"
 import { Navigation, Question, Screen } from "../components"
 import { updateEntry } from "../data"
-import { Check, Tools } from "../icons"
+import { ArrowLeft, ArrowRight, Check } from "../icons"
 
 const questions = [
-    { key: "wokeUpAt", type: "string", inputType: "text", heading: "When did you wake up?" },
+    { key: "wokeUpAt", type: "string", inputType: "time", heading: "When did you wake up?" },
     { key: "wasGoodSleep", type: "boolean", inputType: "yes/no", heading: "Was it good sleep?" },
     {
         key: "feltWhenWokeUp",
@@ -27,10 +28,10 @@ const questions = [
         inputType: "text",
         heading: "Did bad things happen before you got to work?",
     },
-    { key: "startedWorkAt", type: "string", inputType: "text", heading: "When did you start work?" },
+    { key: "startedWorkAt", type: "string", inputType: "time", heading: "When did you start work?" },
     { key: "wasGoodLunch", type: "boolean", inputType: "yes/no", heading: "Did you eat a good lunch?" },
     { key: "lunchBadThings", type: "string", inputType: "text", heading: "Did it have anything bad in it?" },
-    { key: "finishedWorkAt", type: "string", inputType: "text", heading: "When did you finish work?" },
+    { key: "finishedWorkAt", type: "string", inputType: "time", heading: "When did you finish work?" },
     {
         key: "didCompleteEverything",
         type: "boolean",
@@ -59,20 +60,26 @@ const questions = [
         value: "ok",
         heading: "How did you feel before bed?",
     },
-    { key: "wentToBedAt", type: "string", inputType: "text", heading: "When did you go to bed?" },
+    { key: "wentToBedAt", type: "string", inputType: "time", heading: "When did you go to bed?" },
     { key: "comments", type: "string", inputType: "text", heading: "Anything else?" },
 ]
 
-const StyledQuestions = styled.ScrollView.attrs(() => ({
-    contentContainerStyle: () => css`
-        flex: 1;
-        align-items: center;
-        justify-content: center;
-    `,
-    showsVerticalScrollIndicator: false,
-}))`
-    flex: 1;
+const StyledQuestionsContainer = styled.View`
+    flex-grow: 1;
+    position: relative;
+    width: 100%;
 `
+
+const StyledQuestions = animated(styled.View`
+    flex-grow: 1;
+    align-items: flex-start;
+    justify-content: flex-start;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+`)
 
 const StyledHeading = styled.View`
     padding: 10px 10px 0 10px;
@@ -81,6 +88,37 @@ const StyledHeading = styled.View`
 const StyledHeadingText = styled.Text`
     font-size: 30px;
     color: #333;
+`
+
+const StyledConfirmation = styled.ScrollView.attrs(() => ({
+    contentContainerStyle: () => css`
+        flex-grow: 1;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+    `,
+    showsVerticalScrollIndicator: false,
+}))`
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+`
+
+const StyledConfirmationValue = styled.View`
+    flex-grow: 1;
+    background-color: #fff;
+    margin: 10px 10px 0 10px;
+    padding: 10px;
+`
+
+const StyledConfirmationValueText = styled.Text`
+    color: #333;
+`
+
+const StyledConfirmationValueTextHeading = styled(StyledConfirmationValueText)`
+    font-weight: bold;
+    padding-bottom: 10px;
 `
 
 class Log extends Component {
@@ -106,15 +144,7 @@ class Log extends Component {
         super(...params)
 
         for (let i in questions) {
-            const question = questions[i]
-
-            if (["string"].includes(question.type)) {
-                this.state[question.key] = ""
-            }
-
-            if (["boolean"].includes(question.type)) {
-                this.state[question.key] = false
-            }
+            this.state[questions[i].key] = undefined
         }
 
         console.log("state", this.state)
@@ -132,13 +162,32 @@ class Log extends Component {
 
         this.setState({
             [key]: value,
+            // question: question + 1,
         })
 
         updateEntry(match.params.date, key, value)
     }
 
+    onPrevious = () => {
+        const { question } = this.state
+
+        this.setState({
+            question: question - 1,
+        })
+    }
+
+    onNext = () => {
+        const { question } = this.state
+
+        this.setState({
+            question: question + 1,
+        })
+    }
+
     render() {
         const { styles, match } = this.props
+        const { question } = this.state
+        const { onPrevious, onNext } = this
 
         styles.outer.backgroundColor = "#0fc"
 
@@ -147,27 +196,72 @@ class Log extends Component {
                 <StyledHeading>
                     <StyledHeadingText>Journal, {dayjs(match.params.date).format("D MMM")}</StyledHeadingText>
                 </StyledHeading>
-                <StyledQuestions>
-                    {questions.map((question, i) => (
-                        <Question
-                            {...question}
-                            number={i + 1}
-                            value={this.state[question.key]}
-                            onChange={value => this.onChange(question.key, value)}
-                        />
-                    ))}
-                </StyledQuestions>
+                <StyledQuestionsContainer>
+                    <Transition
+                        native
+                        config={{
+                            tension: 200,
+                            friction: 20,
+                        }}
+                        keys={() => question}
+                        from={{ opacity: 0.0, translateX: 100 }}
+                        enter={{ opacity: 1.0, translateX: 0 }}
+                        leave={{ opacity: 0.0, translateX: -100 }}
+                    >
+                        {() => style => (
+                            <StyledQuestions
+                                style={{ opacity: style.opacity, transform: [{ translateX: style.translateX }] }}
+                            >
+                                {question >= questions.length ? (
+                                    <StyledConfirmation>
+                                        {questions.map(question =>
+                                            this.state[question.key] !== undefined &&
+                                            (question.inputType !== "text" || this.state[question.key]) ? (
+                                                <StyledConfirmationValue key={question.key}>
+                                                    <StyledConfirmationValueTextHeading>
+                                                        {question.heading}
+                                                    </StyledConfirmationValueTextHeading>
+                                                    <StyledConfirmationValueText>
+                                                        {question.inputType === "time" && this.state[question.key]}
+                                                        {question.inputType === "text" && this.state[question.key]}
+                                                        {question.inputType === "yes/no" &&
+                                                            (this.state[question.key] ? "yes" : "no")}
+                                                        {question.inputType === "enum" && this.state[question.key]}
+                                                    </StyledConfirmationValueText>
+                                                </StyledConfirmationValue>
+                                            ) : null,
+                                        )}
+                                    </StyledConfirmation>
+                                ) : (
+                                    <Question
+                                        {...questions[question]}
+                                        number={question + 1}
+                                        value={this.state[questions[question].key]}
+                                        onChange={value => this.onChange(questions[question].key, value)}
+                                    />
+                                )}
+                            </StyledQuestions>
+                        )}
+                    </Transition>
+                </StyledQuestionsContainer>
                 <Navigation
                     buttons={[
                         {
-                            to: "/",
                             key: "home",
+                            to: "/",
                             icon: Check,
                         },
                         {
-                            to: "/settings",
-                            key: "settings",
-                            icon: Tools,
+                            key: "previous",
+                            disabled: question <= 0,
+                            onPress: onPrevious,
+                            icon: ArrowLeft,
+                        },
+                        {
+                            key: "next",
+                            disabled: question >= questions.length,
+                            onPress: onNext,
+                            icon: ArrowRight,
                         },
                     ]}
                 />

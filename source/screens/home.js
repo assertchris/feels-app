@@ -1,9 +1,8 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import { Link } from "react-router-native"
 import styled, { css } from "styled-components/native"
-import { HomeEntry, LogButton, Navigation, Screen } from "../components"
+import { Navigation, Screen, Summary } from "../components"
 import { ChartLine, Pencil, Tools } from "../icons"
 
 const StyledScrollView = styled.ScrollView.attrs(() => ({
@@ -65,24 +64,24 @@ class Home extends Component {
                 </StyledHeading>
                 <StyledScrollView>
                     {objects.map(entry => (
-                        <HomeEntry key={entry.date} {...entry} />
+                        <Summary key={entry.date} {...entry} />
                     ))}
                 </StyledScrollView>
                 <Navigation
                     buttons={[
                         {
-                            to: `/log/${formattedDate}`,
                             key: "log",
+                            to: `/log/${formattedDate}`,
                             icon: Pencil,
                         },
                         {
-                            to: "/graphs",
                             key: "graphs",
+                            to: "/graphs",
                             icon: ChartLine,
                         },
                         {
-                            to: "/settings",
                             key: "settings",
+                            to: "/settings",
                             icon: Tools,
                         },
                     ]}
