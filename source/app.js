@@ -33,7 +33,7 @@ class App extends Component {
                         <Transition
                             native
                             config={{
-                                tension: 200,
+                                tension: 300,
                                 friction: 20,
                             }}
                             items={location}
