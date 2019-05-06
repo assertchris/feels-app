@@ -1,4 +1,6 @@
 import React, { Component } from "react"
+import { NativeEventEmitter } from "react-native"
+import iCloudStorage from "react-native-icloudstore"
 import PropTypes from "prop-types"
 import { NativeRouter, Route, Switch } from "react-router-native"
 import { connect } from "react-redux"
@@ -14,6 +16,13 @@ class App extends Component {
     componentDidMount() {
         const { fetchEntries } = this.props
         fetchEntries()
+
+        this.eventEmitter = new NativeEventEmitter(iCloudStorage)
+        this.eventEmitter.addListener("iCloudStoreDidChangeRemotely", fetchEntries)
+    }
+
+    componentWillUnmount() {
+        this.eventEmitter.remove()
     }
 
     render() {

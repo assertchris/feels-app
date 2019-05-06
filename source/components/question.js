@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Component } from "react"
 import { DatePickerIOS, Picker, Switch } from "react-native"
 import PropTypes from "prop-types"
 import styled from "styled-components/native"
@@ -24,26 +24,22 @@ const StyledText = styled.TextInput`
     padding: 10px;
 `
 
-const Question = ({ number, heading, inputType, options, value, onChange }) => {
-    let date = undefined
-    let newOnChange = onChange
+class Question extends Component {
+    static propTypes = {
+        heading: PropTypes.string.isRequired,
+        inputType: PropTypes.string.isRequired,
+        value: PropTypes.any,
+        onChange: PropTypes.func.isRequired,
+    }
 
-    if (inputType === "time") {
-        date = new Date()
+    static defaultProps = {
+        value: undefined,
+    }
 
-        if (value) {
-            if (!value.match(/^\d{2}:\d{2}$/)) {
-                alert(value)
-                value = "12:00"
-            }
+    onChange = value => {
+        const { inputType, onChange } = this.props
 
-            const [hours, minutes] = value.split(":")
-
-            date.setHours(hours)
-            date.setMinutes(minutes)
-        }
-
-        newOnChange = value => {
+        if (inputType === "time") {
             const hours = value
                 .getHours()
                 .toString()
@@ -55,39 +51,48 @@ const Question = ({ number, heading, inputType, options, value, onChange }) => {
                 .padStart(2, "0")
 
             onChange(`${hours}:${minutes}`)
+        } else {
+            onChange(value)
         }
     }
 
-    return (
-        <StyledContainer>
-            <StyledHeading>
-                <StyledHeadingText>
-                    {number}. {heading}
-                </StyledHeadingText>
-            </StyledHeading>
-            {inputType === "time" && <DatePickerIOS date={date} onDateChange={newOnChange} mode="time" />}
-            {inputType === "text" && <StyledText value={value} onChangeText={newOnChange} />}
-            {inputType === "yes/no" && <Switch value={value} onValueChange={newOnChange} />}
-            {inputType === "enum" && (
-                <Picker selectedValue={value} onValueChange={newOnChange}>
-                    {options.map(option => (
-                        <Picker.Item key={option} label={option} value={option} />
-                    ))}
-                </Picker>
-            )}
-        </StyledContainer>
-    )
-}
+    render() {
+        const { number, heading, inputType, options, value } = this.props
+        const { onChange } = this
 
-Question.propTypes = {
-    heading: PropTypes.string.isRequired,
-    inputType: PropTypes.string.isRequired,
-    value: PropTypes.any,
-    onChange: PropTypes.func.isRequired,
-}
+        let date = new Date()
 
-Question.defaultProps = {
-    value: undefined,
+        if (inputType === "time" && value) {
+            if (!value.match(/^\d{2}:\d{2}$/)) {
+                value = "12:00"
+            }
+
+            const [hours, minutes] = value.split(":")
+
+            date.setHours(hours)
+            date.setMinutes(minutes)
+        }
+
+        return (
+            <StyledContainer>
+                <StyledHeading>
+                    <StyledHeadingText>
+                        {number}. {heading}
+                    </StyledHeadingText>
+                </StyledHeading>
+                {inputType === "time" && <DatePickerIOS date={date} onDateChange={onChange} mode="time" />}
+                {inputType === "text" && <StyledText value={value} onChangeText={onChange} />}
+                {inputType === "yes/no" && <Switch value={value} onValueChange={onChange} />}
+                {inputType === "enum" && (
+                    <Picker selectedValue={value} onValueChange={onChange}>
+                        {options.map(option => (
+                            <Picker.Item key={option} label={option} value={option} />
+                        ))}
+                    </Picker>
+                )}
+            </StyledContainer>
+        )
+    }
 }
 
 export { Question }

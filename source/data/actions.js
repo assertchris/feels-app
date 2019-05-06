@@ -16,8 +16,6 @@ export const fetchEntries = () => {
 
         const { ids, entries } = await fetchEntriesFromStorage()
 
-        console.log("fetchEntries entries", entries)
-
         dispatch({
             type: TYPE_FETCH_ENTRIES_SUCCESS,
             payload: { ids, entries },
@@ -100,7 +98,6 @@ export const updateEntry = (date, key, value) => {
         const entry = entries.find(entry => entry.date === date)
 
         entry[key] = value
-        console.log("updateEntry entry", entry)
 
         await saveEntry(date, entry)
 

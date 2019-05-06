@@ -1,9 +1,11 @@
 import React, { Component } from "react"
+import { RefreshControl } from "react-native"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import styled, { css } from "styled-components/native"
 import { Navigation, Screen, Summary } from "../components"
 import { ChartLine, Pencil, Tools } from "../icons"
+import { fetchEntries } from "../data"
 
 const StyledScrollView = styled.ScrollView.attrs(() => ({
     contentContainerStyle: () => css`
@@ -30,6 +32,8 @@ class Home extends Component {
         styles: PropTypes.object,
         entries: PropTypes.array.isRequired,
         formattedDate: PropTypes.string.isRequired,
+        loading: PropTypes.bool.isRequired,
+        fetchEntries: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
@@ -39,8 +43,14 @@ class Home extends Component {
         },
     }
 
+    onRefresh = () => {
+        const { fetchEntries } = this.props
+        fetchEntries()
+    }
+
     render() {
-        const { styles, entries, formattedDate } = this.props
+        const { styles, entries, formattedDate, loading } = this.props
+        const { onRefresh } = this
 
         const objects = Object.values(entries)
 
@@ -62,7 +72,7 @@ class Home extends Component {
                 <StyledHeading>
                     <StyledHeadingText>Overview</StyledHeadingText>
                 </StyledHeading>
-                <StyledScrollView>
+                <StyledScrollView refreshControl={<RefreshControl refreshing={loading} onRefresh={onRefresh} />}>
                     {objects.map(entry => (
                         <Summary key={entry.date} {...entry} />
                     ))}
@@ -95,8 +105,11 @@ const ConnectedHome = connect(
     state => ({
         entries: state.entries,
         formattedDate: state.formattedDate,
+        loading: state.busy.fetchEntries,
     }),
-    undefined,
+    dispatch => ({
+        fetchEntries: () => dispatch(fetchEntries()),
+    }),
 )(Home)
 
 export { ConnectedHome as Home }

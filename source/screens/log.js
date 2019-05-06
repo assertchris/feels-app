@@ -140,31 +140,8 @@ class Log extends Component {
         question: 0,
     }
 
-    constructor(...params) {
-        super(...params)
-
-        for (let i in questions) {
-            this.state[questions[i].key] = undefined
-        }
-
-        console.log("state", this.state)
-    }
-
-    componentDidMount() {
-        const { entries, match } = this.props
-        const entry = entries.find(entry => entry.date === match.params.date)
-
-        this.setState({ ...entry })
-    }
-
     onChange = (key, value) => {
         const { match, updateEntry } = this.props
-
-        this.setState({
-            [key]: value,
-            // question: question + 1,
-        })
-
         updateEntry(match.params.date, key, value)
     }
 
@@ -185,9 +162,11 @@ class Log extends Component {
     }
 
     render() {
-        const { styles, match } = this.props
+        const { styles, match, entries } = this.props
         const { question } = this.state
         const { onPrevious, onNext } = this
+
+        const entry = entries.find(entry => entry.date === match.params.date)
 
         styles.outer.backgroundColor = "#0fc"
 
@@ -215,18 +194,18 @@ class Log extends Component {
                                 {question >= questions.length ? (
                                     <StyledConfirmation>
                                         {questions.map(question =>
-                                            this.state[question.key] !== undefined &&
-                                            (question.inputType !== "text" || this.state[question.key]) ? (
+                                            entry[question.key] !== undefined &&
+                                            (question.inputType !== "text" || entry[question.key]) ? (
                                                 <StyledConfirmationValue key={question.key}>
                                                     <StyledConfirmationValueTextHeading>
                                                         {question.heading}
                                                     </StyledConfirmationValueTextHeading>
                                                     <StyledConfirmationValueText>
-                                                        {question.inputType === "time" && this.state[question.key]}
-                                                        {question.inputType === "text" && this.state[question.key]}
+                                                        {question.inputType === "time" && entry[question.key]}
+                                                        {question.inputType === "text" && entry[question.key]}
                                                         {question.inputType === "yes/no" &&
-                                                            (this.state[question.key] ? "yes" : "no")}
-                                                        {question.inputType === "enum" && this.state[question.key]}
+                                                            (entry[question.key] ? "yes" : "no")}
+                                                        {question.inputType === "enum" && entry[question.key]}
                                                     </StyledConfirmationValueText>
                                                 </StyledConfirmationValue>
                                             ) : null,
@@ -236,7 +215,7 @@ class Log extends Component {
                                     <Question
                                         {...questions[question]}
                                         number={question + 1}
-                                        value={this.state[questions[question].key]}
+                                        value={entry[questions[question].key]}
                                         onChange={value => this.onChange(questions[question].key, value)}
                                     />
                                 )}
