@@ -1,10 +1,11 @@
 import React from "react"
-import { TouchableWithoutFeedback } from "react-native"
 import { Link } from "react-router-native"
 import styled from "styled-components/native"
 import dayjs from "dayjs"
 
-const StyledSummaryContainer = styled.View`
+const StyledSummaryContainer = styled.TouchableOpacity.attrs(() => ({
+    activeOpacity: 0.75,
+}))`
     margin: 10px 10px 0 10px;
     padding: 10px;
     background-color: #fff;
@@ -47,17 +48,15 @@ const Summary = ({ date, comments }) => {
         <Link
             to={`/log/${date}`}
             component={({ onPress }) => (
-                <TouchableWithoutFeedback onPress={onPress}>
-                    <StyledSummaryContainer>
-                        <StyledLeftCell>
-                            <StyledDay>{dateObject.format("D")}</StyledDay>
-                            <StyledMonth>{dateObject.format("MMM")}</StyledMonth>
-                        </StyledLeftCell>
-                        <StyledRightCell>
-                            <StyledComments>{comments}</StyledComments>
-                        </StyledRightCell>
-                    </StyledSummaryContainer>
-                </TouchableWithoutFeedback>
+                <StyledSummaryContainer onPress={onPress}>
+                    <StyledLeftCell>
+                        <StyledDay>{dateObject.format("D")}</StyledDay>
+                        <StyledMonth>{dateObject.format("MMM")}</StyledMonth>
+                    </StyledLeftCell>
+                    <StyledRightCell>
+                        <StyledComments>{comments}</StyledComments>
+                    </StyledRightCell>
+                </StyledSummaryContainer>
             )}
         />
     )

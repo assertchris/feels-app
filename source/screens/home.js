@@ -3,6 +3,7 @@ import { RefreshControl } from "react-native"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import styled, { css } from "styled-components/native"
+import debounce from "lodash/debounce"
 import { Navigation, Screen, Summary } from "../components"
 import { ChartLine, Pencil, Tools } from "../icons"
 import { fetchEntries } from "../data"
@@ -41,6 +42,11 @@ class Home extends Component {
             outer: {},
             inner: {},
         },
+    }
+
+    componentDidMount() {
+        const { fetchEntries } = this.props
+        fetchEntries()
     }
 
     onRefresh = () => {
@@ -108,7 +114,7 @@ const ConnectedHome = connect(
         loading: state.busy.fetchEntries,
     }),
     dispatch => ({
-        fetchEntries: () => dispatch(fetchEntries()),
+        fetchEntries: debounce(() => dispatch(fetchEntries())),
     }),
 )(Home)
 

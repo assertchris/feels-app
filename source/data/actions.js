@@ -9,48 +9,65 @@ export const TYPE_FETCH_SETTINGS_BUSY = "TYPE_FETCH_SETTINGS_BUSY"
 export const TYPE_FETCH_SETTINGS_SUCCESS = "TYPE_FETCH_SETTINGS_SUCCESS"
 export const TYPE_UPDATE_SETTING_BUSY = "TYPE_UPDATE_SETTING_BUSY"
 export const TYPE_UPDATE_SETTING_SUCCESS = "TYPE_UPDATE_SETTING_SUCCESS"
+export const TYPE_RESET = "TYPE_RESET"
 
-export const STORAGE_KEY_IDS = "STORAGE_KEY_IDS"
-export const STORAGE_KEY_SETTINGS = "STORAGE_KEY_SETTINGS"
+export const STORAGE_KEY_KEYS = "keys"
+export const STORAGE_KEY_SETTINGS = "global-settings"
 
 export const fetchEntries = () => {
     return async (dispatch, getState) => {
         dispatch({ type: TYPE_FETCH_ENTRIES_BUSY })
 
+        const allKeys = await Storage.getAllKeys()
+        allKeys.sort()
+
+        // console.log("fetchEntries allKeys", allKeys)
+
         const { profile } = getState().settings
-        const { ids, entries } = await fetchEntriesFromStorage(profile)
+        const { keys, entries } = await fetchEntriesFromStorage(profile || "global")
+
+        console.log("fetchEntries profile", profile)
+        console.log("fetchEntries entries", entries)
 
         dispatch({
             type: TYPE_FETCH_ENTRIES_SUCCESS,
-            payload: { ids, entries },
+            payload: { keys, allKeys, entries },
         })
     }
 }
 
 const fetchEntriesFromStorage = async profile => {
-    const ids = await getIds(profile)
-    const savedEntries = await getEntries(profile, ids)
+    const keys = await getKeys(profile)
+    const savedEntries = await getEntries(keys)
     const entries = await createMissingEntries(profile, savedEntries)
 
-    return { ids, entries }
+    console.log("fetchEntriesFromStorage keys", keys)
+    console.log("fetchEntriesFromStorage savedEntries", savedEntries)
+    console.log("fetchEntriesFromStorage entries", entries)
+
+    return { keys, entries }
 }
 
-const getIds = async profile => {
-    let ids = await Storage.getItem(`${profile}${STORAGE_KEY_IDS}`)
+const getKeys = async profile => {
+    let keys = await Storage.getItem(`${profile}-${STORAGE_KEY_KEYS}`)
 
-    if (ids) {
-        ids = JSON.parse(ids)
+    // console.log("getKeys key", `${profile}${STORAGE_KEY_KEYS}`)
+
+    if (keys) {
+        keys = JSON.parse(keys)
     }
 
-    if (!ids) {
-        ids = []
+    if (!keys) {
+        keys = []
     }
 
-    return ids
+    return keys
 }
 
-const getEntries = async (profile, ids) => {
-    const savedEntries = await Storage.multiGet(ids)
+const getEntries = async keys => {
+    const savedEntries = await Storage.multiGet(keys.map(key => key))
+
+    // console.log("getEntries keys", keys)
 
     for (let i in savedEntries) {
         savedEntries[i] = JSON.parse(savedEntries[i])
@@ -82,13 +99,17 @@ const createMissingEntries = async (profile, entries) => {
     return entries
 }
 
-const saveEntry = async (profile, id, entry) => {
-    let ids = await getIds(profile)
+const saveEntry = async (profile, key, entry) => {
+    let keys = await getKeys(profile)
 
-    ids = [...ids.filter(next => next !== id), `${profile}${id}`]
+    keys = [...keys.filter(next => next !== `${profile}-${key}`), `${profile}-${key}`]
 
-    await Storage.setItem(`${profile}${STORAGE_KEY_IDS}`, JSON.stringify(ids))
-    await Storage.setItem(`${profile}${id}`, JSON.stringify(entry))
+    // console.log("saveEntry keys key", `${profile}-${STORAGE_KEY_KEYS}`)
+    // console.log("saveEntry keys value", keys)
+    // console.log("saveEntry key", `${profile}${key}`)
+
+    await Storage.setItem(`${profile}-${STORAGE_KEY_KEYS}`, JSON.stringify(keys))
+    await Storage.setItem(`${profile}-${key}`, JSON.stringify(entry))
 }
 
 export const updateEntry = (date, key, value) => {
@@ -103,9 +124,11 @@ export const updateEntry = (date, key, value) => {
         const entries = getState().entries
         const entry = entries.find(entry => entry.date === date)
 
+        // console.log("updateEntry entry", entry)
+
         entry[key] = value
 
-        await saveEntry(profile, date, entry)
+        await saveEntry(profile || "global", date, entry)
 
         dispatch({ type: TYPE_UPDATE_ENTRY_SUCCESS })
     }
@@ -121,7 +144,7 @@ export const fetchSettings = () => {
 
         dispatch({
             type: TYPE_FETCH_SETTINGS_SUCCESS,
-            payload: settings || {},
+            payload: JSON.parse(settings || "{}"),
         })
     }
 }
@@ -137,8 +160,40 @@ export const updateSetting = (key, value) => {
         await Storage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings))
 
         dispatch({ type: TYPE_UPDATE_SETTING_SUCCESS })
+    }
+}
 
-        // get new entries from the intended profile
+export const reset = () => {
+    return async (dispatch, getState) => {
+        dispatch({
+            type: TYPE_RESET,
+        })
+
+        // Storage.clear()
+
+        const { profile } = getState().settings
+        const allKeys = await Storage.getAllKeys()
+        const deleteKeys = []
+
+        // console.log("allKeys", allKeys)
+
+        for (let i in allKeys) {
+            if (allKeys[i].startsWith(profile)) {
+                // console.log("key matching prefix", allKeys[i])
+                deleteKeys.push(allKeys[i])
+            }
+        }
+
+        console.log("deleteKeys", deleteKeys)
+        await Storage.multiRemove(deleteKeys)
+    }
+}
+
+export const removeKey = key => {
+    return async dispatch => {
+        await Storage.removeItem(key)
+
+        // refresh this list
         dispatch(fetchEntries())
     }
 }

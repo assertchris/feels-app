@@ -9,10 +9,12 @@ import {
     TYPE_FETCH_SETTINGS_SUCCESS,
     TYPE_UPDATE_SETTING_BUSY,
     TYPE_UPDATE_SETTING_SUCCESS,
+    TYPE_RESET,
 } from "./actions"
 
 export const initial = {
-    ids: [],
+    keys: [],
+    allKeys: [],
     entries: [],
     busy: {
         fetchEntries: false,
@@ -46,7 +48,8 @@ export const reducer = (state = initial, action) => {
                     ...state.busy,
                     fetchEntries: false,
                 },
-                ids: action.payload.ids,
+                keys: action.payload.keys,
+                allKeys: action.payload.allKeys,
                 entries: action.payload.entries,
             }
         }
@@ -118,6 +121,13 @@ export const reducer = (state = initial, action) => {
                     ...state.busy,
                     updateSetting: false,
                 },
+            }
+        }
+        case TYPE_RESET: {
+            return {
+                ...state,
+                keys: initial.keys,
+                entries: initial.entries,
             }
         }
         default: {

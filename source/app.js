@@ -5,20 +5,32 @@ import PropTypes from "prop-types"
 import { NativeRouter, Route, Switch } from "react-router-native"
 import { connect } from "react-redux"
 import { Transition } from "react-spring/renderprops-native"
-import { fetchEntries } from "./data"
+import debounce from "lodash/debounce"
+import { fetchEntries, fetchSettings } from "./data"
 import { Graphs, Log, Home, Settings } from "./screens"
 
 class App extends Component {
     static propTypes = {
+        busy: PropTypes.object.isRequired,
+        entries: PropTypes.array.isRequired,
         fetchEntries: PropTypes.func.isRequired,
+        fetchSettings: PropTypes.func.isRequired,
+    }
+
+    componentDidUpdate() {
+        const { fetchEntries, busy, entries } = this.props
+
+        if (!busy.fetchSettings && !busy.fetchEntries && entries.length < 1) {
+            fetchEntries()
+        }
     }
 
     componentDidMount() {
-        const { fetchEntries } = this.props
-        fetchEntries()
+        const { fetchEntries, fetchSettings } = this.props
+        fetchSettings()
 
         this.eventEmitter = new NativeEventEmitter(iCloudStorage)
-        this.eventEmitter.addListener("iCloudStoreDidChangeRemotely", fetchEntries)
+        this.eventEmitter.addListener("iCloudStoreDidChangeRemotely", debounce(fetchEntries))
     }
 
     componentWillUnmount() {
@@ -41,6 +53,9 @@ class App extends Component {
                             from={{ opacity: 0.0, translateX: 100 }}
                             enter={{ opacity: 1.0, translateX: 0 }}
                             leave={{ opacity: 0.0, translateX: -100 }}
+                            ref={this.animation}
+                            unique={true}
+                            reset={true}
                         >
                             {location => style => {
                                 const styles = {
@@ -85,9 +100,13 @@ class App extends Component {
 }
 
 const ConnectedApp = connect(
-    undefined,
+    state => ({
+        busy: state.busy,
+        entries: state.entries,
+    }),
     dispatch => ({
-        fetchEntries: () => dispatch(fetchEntries()),
+        fetchEntries: debounce(() => dispatch(fetchEntries())),
+        fetchSettings: debounce(() => dispatch(fetchSettings())),
     }),
 )(App)
 
